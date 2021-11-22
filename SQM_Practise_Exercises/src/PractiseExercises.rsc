@@ -29,9 +29,10 @@ public void exercise6() {
    println({ x | x <- eu, /e.*e/i := x });
    println();
    
+   //rest of 6 from given answers
+   
    println("6c");
    //The name contains exactly two e’s
-   //rest of 6 from given answers
    println({ a | a <- eu, /^([^e]*e){2}[^e]*$/i := a });
    println();
    
