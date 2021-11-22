@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SQM_Practise_Exercises
+Bundle-SymbolicName: SQM_Practise_Exercises
+Bundle-Version: 1.0.0
+Require-Bundle: rascal_eclipse
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
