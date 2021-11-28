@@ -234,9 +234,58 @@ public void exercise9() {
    	println(aantalIfs[0]);
 }
 
+public void exercise10() {
+// Exercise 10 From answers. Have to take another look at ex 9 and 10.
+// --------------------------------------------------------------------------
+// Opgave 10: visualisaties
+
+public list[&T] copy(int n, &T element) {
+   return [ element | _ <- [0..n] ];
+}
+
+Figure redSquares  = hcat(copy(10, box(size(40), fillColor("red"))), gap(10), resizable(false));
+
+public void exercise10a() {
+   render("red squares", redSquares);
+} 
+
+public Figure shapeSwitch() {
+   bool status = true;
+   
+   // local call-back function
+   bool changeStatus(int butnr, map[KeyModifier,bool] modifiers) { 
+      status = !status; 
+      return true;
+   };
+   
+   Figure s1 = box(size(40), fillColor("red"), resizable(false), onMouseDown(changeStatus));
+   Figure s2 = ellipse(size(40), fillColor("green"), resizable(false), onMouseDown(changeStatus));
+   
+   return computeFigure(Figure() {return status ? s1 : s2;});
+}
+
+public void exercise10b() {
+   render("click on square", shapeSwitch());
+} 
+
+map[str, int] jabberSizes = 
+   ("AboutBox.java":28, "Accessor":30, "BitmapItem":67, "DemoPresentation":50,
+    "JabberPoint":37, "KeyController":44, "MenuController":109, "Presentation":107,
+    "Slide":85, "SlideItem": 38, "SlideViewerComponent":62, "SlideViewerFrame":36,
+    "Style.java":57, "TextItem.java":108, "XMLAccessor":112);
+
+Figure jabberTreemap = treemap([ box(text(s),area(n),fillColor(arbColor())) | <s,n> <- toRel(jabberSizes) ]);
+
+public void exercise10c() {
+   render("JabberPoint treemap", jabberTreemap);
+}
+
+}
+
 public void allExercises() {
 	exercise6();
 	exercise7();
 	exercise8();
 	exercise9();
+	exercise10();
 }
