@@ -13,6 +13,8 @@ import vis::Figure;
 import vis::Render;
 import vis::KeySym;
 
+
+
 //exercises 1-4 installing and setting up git repo
 
 public void exercise5() {
@@ -128,8 +130,19 @@ public void exercise8() {
    println(( a:size(invert(uses)[a]) | a <- componenten ));
 }
 
+public set[loc] javaBestanden(loc project) {
+   Resource r = getProject(project);
+   return { a | /file(a) <- r, a.extension == "java" };
+}
+public void exercise9() {
+	loc project = |project://JabberPoint/|;
+	set[loc] bestanden = javaBestanden(project);
+	println(size(bestanden));
+}
 
 public void allExercises() {
 	exercise6();
 	exercise7();
+	exercise8();
+	exercise9();
 }
