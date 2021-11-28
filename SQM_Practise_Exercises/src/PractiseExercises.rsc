@@ -71,7 +71,7 @@ public rel[int, int] delers(int maxnum) {
 
 public void exercise7() {
 	println("7a");
-		//Compute the relationship between the natural numbers up to 100 and their divisors. Optionally make the upper limit a parameter
+	//Compute the relationship between the natural numbers up to 100 and their divisors. Optionally make the upper limit a parameter
 	list[int] g100 = [1..100];
 	println({ <g1, g2> | g1 <- g100, g2 <- g100, g1 > g2, g1%g2==0 });
 	println();
@@ -91,8 +91,45 @@ public void exercise7() {
    	println("(7c)");
    	println(sort([ a | a <- domain(m), m[a] == 2 ]));
 }
+public Graph[str] uses = {<"A", "B">, <"A", "D">, 
+   <"B", "D">, <"B", "E">, <"C", "B">, <"C", "E">, 
+   <"C", "F">, <"E", "D">, <"E", "F">};
+   
+public void exercise8() {
+   componenten = carrier(uses);
+
+   println("(8a)");
+   //How many components does the system consist of?
+   println(size(componenten));
+   println();
+
+   println("(8b)");
+   //How many dependencies are there between the components?
+   println(size(uses));
+   println();
+
+   println("(8c)");
+   //Which components are not used by any component?
+   println(top(uses));
+   println();
+   
+   println("(8d)");
+   //Which components are needed (directly or indirectly) for A?
+   println((uses+)["A"]);
+   println();
+   
+   println("(8e)");
+   //Which components are not used (directly or indirectly) by C?
+   println(componenten - (uses*)["C"]);
+   println();
+   
+   println("(8f)");
+   //How often is each component used?
+   println(( a:size(invert(uses)[a]) | a <- componenten ));
+}
 
 
 public void allExercises() {
 	exercise6();
+	exercise7();
 }
