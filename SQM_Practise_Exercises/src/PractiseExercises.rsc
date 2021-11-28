@@ -1,6 +1,17 @@
 module PractiseExercises
 
 import IO;
+import List;
+import Map;
+import Relation;
+import Set;
+import analysis::graphs::Graph;
+import util::Resources;
+import lang::java::jdt::m3::Core;
+import lang::java::m3::AST;
+import vis::Figure;
+import vis::Render;
+import vis::KeySym;
 
 //exercises 1-4 installing and setting up git repo
 
@@ -36,18 +47,52 @@ public void exercise6() {
    println({ a | a <- eu, /^([^e]*e){2}[^e]*$/i := a });
    println();
    
-   println("(6d)");
+   println("6d");
    //The name contains no n and also no e
    println({ a | a <- eu, /^[^en]*$/i := a });
    println();
    
-   println("(6e)");
+   println("6e");
    //The name contains any letter at least twice
    println({ a | a <- eu, /<x:[a-z]>.*<x>/i := a });
    println();
    
-   println("(6f)");
+   println("6f");
    //The name contains an a: the first a in the name is replaced by an o (for example: "Malta" becomes "Molta")
    println({ begin+"o"+eind | a <- eu, /^<begin:[^a]*>a<eind:.*>$/i := a });
    println();
+   
+}
+//from answers
+public rel[int, int] delers(int maxnum) {
+   return { <a, b> | a <- [1..maxnum], b <- [1..a+1], a%b==0 };
+}
+
+
+public void exercise7() {
+	println("7a");
+		//Compute the relationship between the natural numbers up to 100 and their divisors. Optionally make the upper limit a parameter
+	list[int] g100 = [1..100];
+	println({ <g1, g2> | g1 <- g100, g2 <- g100, g1 > g2, g1%g2==0 });
+	println();
+	
+	println("7b");
+	//Compute which numbers have the most divisors	
+	rel[int,int] listPairs = { <g1, g2> | g1 <- g100, g2 <- g100, g1 > g2, g1%g2==0 };
+	println(listPairs);
+	int maxCombinations = max(range(listPairs)); 
+
+	//from answers
+	rel[int, int] d = delers(100);
+   	map[int, int] m = (a:size(d[a]) | a <- domain(d));
+   	int maxdiv = max(range(m)); 
+   	println({ a | a <- domain(d), m[a] == maxdiv });
+   	// Compute the list of prime numbers (up to 100) in ascending order.
+   	println("(7c)");
+   	println(sort([ a | a <- domain(m), m[a] == 2 ]));
+}
+
+
+public void allExercises() {
+	exercise6();
 }
