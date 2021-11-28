@@ -36,7 +36,7 @@ public void exercise6() {
    println();
    
    println("6b");
-   //The name contains (at least) two e’s
+   //The name contains (at least) two eâ€™s
    println({ x | x <- eu, /e*e/i := x }); 
    println("6b 2nd try");
    println({ x | x <- eu, /e.*e/i := x });
@@ -45,7 +45,7 @@ public void exercise6() {
    //rest of 6 from given answers
    
    println("6c");
-   //The name contains exactly two e’s
+   //The name contains exactly two eâ€™s
    println({ a | a <- eu, /^([^e]*e){2}[^e]*$/i := a });
    println();
    
@@ -90,7 +90,7 @@ public void exercise7() {
    	int maxdiv = max(range(m)); 
    	println({ a | a <- domain(d), m[a] == maxdiv });
    	// Compute the list of prime numbers (up to 100) in ascending order.
-   	println("(7c)");
+   	println("7c");
    	println(sort([ a | a <- domain(m), m[a] == 2 ]));
 }
 public Graph[str] uses = {<"A", "B">, <"A", "D">, 
@@ -100,44 +100,138 @@ public Graph[str] uses = {<"A", "B">, <"A", "D">,
 public void exercise8() {
    componenten = carrier(uses);
 
-   println("(8a)");
+   println("8a");
    //How many components does the system consist of?
    println(size(componenten));
    println();
 
-   println("(8b)");
+   println("8b");
    //How many dependencies are there between the components?
    println(size(uses));
    println();
 
-   println("(8c)");
+   println("8c");
    //Which components are not used by any component?
    println(top(uses));
    println();
    
-   println("(8d)");
+   println("8d");
    //Which components are needed (directly or indirectly) for A?
    println((uses+)["A"]);
    println();
    
-   println("(8e)");
+   println("8e");
    //Which components are not used (directly or indirectly) by C?
    println(componenten - (uses*)["C"]);
    println();
    
-   println("(8f)");
+   println("8f");
    //How often is each component used?
    println(( a:size(invert(uses)[a]) | a <- componenten ));
+}
+
+public set[loc] javaFiles(loc project) {
+   Resource r = getProject(project);
+   return { a | /file(a) <- r, a.extension == "java" };
 }
 
 public set[loc] javaBestanden(loc project) {
    Resource r = getProject(project);
    return { a | /file(a) <- r, a.extension == "java" };
 }
+
+public bool descending(tuple[&a, num] x, tuple[&a, num] y) {
+   return x[1] > y[1];
+}
+
+public bool aflopend(tuple[&a, num] x, tuple[&a, num] y) {
+   return x[1] > y[1];
+} 
+
+public int telIfs(Statement d) {
+   int count = 0;
+   visit(d) {
+      case \if(_,_): count=count+1;
+      case \if(_,_,_): count=count+1;
+   } 
+   return count;
+}
+
+public lrel[str, Statement] methodenAST(loc project) {
+   set[loc] bestanden = javaBestanden(project);
+   set[Declaration] decls = createAstsFromFiles(bestanden, false);
+   lrel[str, Statement] result = [];
+   visit (decls) {
+      case \method(_, name, _, _, impl): result += <name, impl>;
+      case \constructor(name, _, _, impl): result += <name, impl>;
+   }
+   return(result);
+}
+
 public void exercise9() {
+   println("9a");
+	//Calculate the number of Java files that make up the project.
 	loc project = |project://JabberPoint/|;
-	set[loc] bestanden = javaBestanden(project);
-	println(size(bestanden));
+	set[loc] files = javaFiles(project);
+	println(size(files));
+	println();
+	
+	println("9b");
+	//Report the number of lines per Java file, in descending order
+	map[loc, int] lines = ( a:size(readFileLines(a)) | a <- files );
+	//ascending
+   	for (<a, b> <- sort(toList(lines)))
+   		println("<a.file>: <b> lines");
+   
+   println();
+   
+    //descending
+    for (<a, b> <- sort(toList(lines)))
+    	println("<a.file>: <b> lines");
+    
+    println();
+    
+    //extra info - show all extend relationships
+    M3 model = createM3FromEclipseProject(|project://JabberPoint/|);
+	for (<a,b> <- model.extends)
+		println("<a> extends <b>");
+	
+	println();
+	
+	set[Declaration] asts =
+		createAstsFromFiles({|project://JabberPoint/src/XMLAccessor.java|}, false);
+	int numLoops = 0;
+	visit (asts) {
+		case \for(_,_,_): numLoops=numLoops+1;
+		case \for(_,_,_,_): numLoops=numLoops+1;
+		case \foreach(_,_,_): numLoops=numLoop+1;
+	}
+	println("<numLoops> for loops");
+	
+	println();
+	println("9c");
+	//Sort the classes in the project by the number of methods
+    
+    //van antwoorden
+    println("(9c)");
+   	M3 model2 = createM3FromEclipseProject(project);
+   	methoden =  { <x,y> | <x,y> <- model2.containment, x.scheme=="java+class", y.scheme=="java+method" || y.scheme=="java+constructor" };
+   	telMethoden = { <a, size(methoden[a])> | a <- domain(methoden) };
+   	for (<a,n> <- sort(telMethoden, aflopend))
+    	println("<a>: <n> methoden");
+   
+   	// klasse met meeste subklassen
+   	println("(9d)");
+   	subklassen = invert(model2.extends);
+   	telKinderen = { <a, size((subklassen+)[a])> | a <- domain(subklassen) };
+   	for (<a, n> <- sort(telKinderen, aflopend))
+    	println("<a>: <n> subklassen");
+   
+   	// klasse met meeste if-statements
+   	println("(9e)");
+   	stats = methodenAST(project);
+   	aantalIfs = sort([ <name, telIfs(s)> | <name, s> <- stats ], aflopend);
+   	println(aantalIfs[0]);
 }
 
 public void allExercises() {
